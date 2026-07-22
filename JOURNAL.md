@@ -1,3 +1,34 @@
+# Journal — Issue #153
+
+## Issue Selected
+
+**Issue #153:** Faithfulness checker crashes when a context chunk has `text: None`
+**Link:** https://github.com/ascherj/pathreview/issues/153
+**Tier:** 1 (Starter — good for first-time contributors)
+
+## Why This Issue Fits Me
+
+I'm new to navigating a codebase this large, so I deliberately looked for a Tier 1 issue rather than a Tier 2 or 3 one — there's no extra credit for picking something harder, and I wanted my first contribution to be something I could fully understand end-to-end rather than something I'd have to partially guess at.
+
+This issue fit that goal well: the bug report already identified the exact root cause (a `.get()` default-value gotcha) and gave exact reproduction steps and a named failing test. That meant I could focus my effort on verifying and understanding the fix deeply, rather than spending most of my time just locating the problem. It's scoped to a single function in a single file (`rag/evaluator/faithfulness_checker.py`), which matched the "single file/config" description of Tier 1 issues.
+
+## Problem Summary
+
+`FaithfulnessChecker.check()` crashes with a `TypeError` when a context chunk's `text` key is explicitly set to `None`, rather than missing entirely.
+
+The bug is in this line:
+
+```python
+context_text = " ".join([
+    chunk.get("text", "") for chunk in context_chunks
+])
+```
+
+`dict.get(key, default)` only returns `default` when `key` is **absent** from the dictionary. If `key` exists but its value is `None`, `.get()` returns `None` — the default is never applied. When `context_chunks` contains a chunk like `{"text": None}`, this line collects `None` into the list being joined, and `" ".join([...])` raises:
+
+TypeError: sequence item 0: expected str instance, NoneType found
+
+
 This matches the reproduction steps in the issue exactly.
 
 ## Why This Matters
