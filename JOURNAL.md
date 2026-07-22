@@ -1,22 +1,3 @@
-# Journal — Issue #153
-
-## Problem Summary
-
-`FaithfulnessChecker.check()` crashes with a `TypeError` when a context chunk's `text` key is explicitly set to `None`, rather than missing entirely.
-
-The bug is in this line:
-
-```python
-context_text = " ".join([
-    chunk.get("text", "") for chunk in context_chunks
-])
-```
-
-`dict.get(key, default)` only returns `default` when `key` is **absent** from the dictionary. If `key` exists but its value is `None`, `.get()` returns `None` — the default is never applied. When `context_chunks` contains a chunk like `{"text": None}`, this line collects `None` into the list being joined, and `" ".join([...])` raises:
-
-TypeError: sequence item 0: expected str instance, NoneType found
-
-
 This matches the reproduction steps in the issue exactly.
 
 ## Why This Matters
