@@ -12,6 +12,16 @@ I'm new to navigating a codebase this large, so I deliberately looked for a Tier
 
 This issue fit that goal well: the bug report already identified the exact root cause (a `.get()` default-value gotcha) and gave exact reproduction steps and a named failing test. That meant I could focus my effort on verifying and understanding the fix deeply, rather than spending most of my time just locating the problem. It's scoped to a single function in a single file (`rag/evaluator/faithfulness_checker.py`), which matched the "single file/config" description of Tier 1 issues.
 
+## "Is This Right For Me?" Checklist Reasoning
+
+**Understanding the issue:** I can explain this without re-reading it: `dict.get(key, default)` only applies the default when the key is missing, not when it's present with value `None`. Before the fix, passing a context chunk like `{"text": None}` crashes the whole faithfulness check with a `TypeError`. After the fix, the same input degrades gracefully and returns a valid float score instead.
+
+**Tier fit:** This is my first open source contribution, so Tier 1 was the right call rather than reaching for Tier 2 or 3 to "challenge myself." The issue lives entirely in one function in one file, matching the Tier 1 description exactly.
+
+**Codebase readiness:** I located and read the exact function (`FaithfulnessChecker.check()`), not just the file, and could reason through the fix (`chunk.get("text") or ""`) before writing any code. I also read the full test file (`tests/unit/test_faithfulness_checker.py`) end-to-end, including the specific failing test (`test_none_context_chunk_text`) referenced in the issue.
+
+**Scope and time:** The issue had 41 existing comments, but claims are non-exclusive and my grade comes from my own artifacts, so I didn't let that discourage me from picking it. I estimated this at the lower end of the 3–6 hour Tier 1 range for the core fix itself, though my actual time this week was higher due to unrelated local environment setup issues (BIOS/virtualization and two Docker service bugs), which I've documented separately. No blockers or dependencies were noted on the issue.
+
 ## Problem Summary
 
 `FaithfulnessChecker.check()` crashes with a `TypeError` when a context chunk's `text` key is explicitly set to `None`, rather than missing entirely.
