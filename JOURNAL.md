@@ -109,3 +109,14 @@ I'm leaving these out of this PR since they're outside the scope of #153 and wou
 **Walkthrough video (recommended):** Not recorded.
 
 **Blockers or open questions:** None significant. One open question I noted in PLAN.md's Risks section: whether `None` text values showing up in context chunks might point to a separate upstream ingestion bug worth investigating later — but that's out of scope for this fix.
+
+
+## Week 9 — Solution building & PR submission
+
+### Check-in 1 (mid-week)
+
+**Current progress:** All 5 sub-tasks from PLAN.md are complete: reproduced the bug, identified root cause, applied the fix (`chunk.get("text") or ""`), confirmed the target test passes, and isolated the fix's effect via `git stash`/`stash pop` against both my own branch history and against `main` directly.
+
+**Next steps:** Run `make check` and `make test-unit` for a final pre-PR review, open the pull request with the full template filled in, and post it in Slack for peer/mentor feedback.
+
+**Blockers:** None. Confirmed via direct comparison against `main` (53 failed/375 passed on `main` vs. 52 failed/376 passed on my branch) that my change introduces zero new failures and fixes exactly the one test tied to issue #153.
