@@ -97,3 +97,15 @@ I'm leaving these out of this PR since they're outside the scope of #153 and wou
 
 - Branch: `fix/153-faithfulness-none-context-text`
 - Commit: `df03eb8` — `fix(rag): handle None context chunk text in faithfulness checker`
+
+## Week 8 — Reproduction & solution planning
+
+**Reproduction commit link:** https://github.com/VanStacked/pathreview/commit/4757b4e
+
+**Reproduction summary:** I wrote a small script (`reproduce_issue_153.py`) that calls `FaithfulnessChecker().check()` with a context chunk of `{"text": None}`. Running it confirmed the exact `TypeError: sequence item 0: expected str instance, NoneType found` described in the issue, proving the bug is real and reproducible in my local environment.
+
+**PLAN.md link:** https://github.com/VanStacked/pathreview/blob/fix/153-faithfulness-none-context-text/PLAN.md
+
+**Walkthrough video (recommended):** Not recorded.
+
+**Blockers or open questions:** None significant. One open question I noted in PLAN.md's Risks section: whether `None` text values showing up in context chunks might point to a separate upstream ingestion bug worth investigating later — but that's out of scope for this fix.
