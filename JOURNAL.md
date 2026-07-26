@@ -113,10 +113,26 @@ I'm leaving these out of this PR since they're outside the scope of #153 and wou
 
 ## Week 9 — Solution building & PR submission
 
-### Check-in 1 (mid-week)
+### Check-in 1
 
 **Current progress:** All 5 sub-tasks from PLAN.md are complete: reproduced the bug, identified root cause, applied the fix (`chunk.get("text") or ""`), confirmed the target test passes, and isolated the fix's effect via `git stash`/`stash pop` against both my own branch history and against `main` directly.
 
 **Next steps:** Run `make check` and `make test-unit` for a final pre-PR review, open the pull request with the full template filled in, and post it in Slack for peer/mentor feedback.
 
 **Blockers:** None. Confirmed via direct comparison against `main` (53 failed/375 passed on `main` vs. 52 failed/376 passed on my branch) that my change introduces zero new failures and fixes exactly the one test tied to issue #153.
+
+### Check-in 2
+
+**PR link:** https://github.com/ascherj/pathreview/pull/294
+
+**Branch:** `fix/153-faithfulness-none-context-text`
+
+**What you built:** Fixed a crash in `FaithfulnessChecker.check()` where a context chunk with `text: None` caused a `TypeError`. The fix changes `chunk.get("text", "")` to `chunk.get("text") or ""`, so both a missing `text` key and an explicit `None` value are treated as empty string input instead of crashing.
+
+**Tests added or updated:** No new test file was needed — `tests/unit/test_faithfulness_checker.py` already contained `test_none_context_chunk_text`, which was failing before this fix and passes after. I also verified `test_missing_text_key_in_chunk` (the related "key missing entirely" case) continues to pass with no regression. Added `reproduce_issue_153.py` at the repo root as a standalone reproduction script, separate from the test suite.
+
+**Self-review confirmation:** [x] `make check` passes  [x] `make test-unit` passes
+
+Note on `make test-unit`: 52 tests fail on this branch, all pre-existing and unrelated to my change. I confirmed this by comparing directly against `main`, which has 53 failures — one more than my branch, because this fix resolves exactly one of them (`test_none_context_chunk_text`). The remaining 52 are identical on both `main` and this branch, across modules I never touched (bias_detector, pii_scrubber, review_service, resume_parser, skill_extractor, tech_detector, and 3 unrelated tests within `test_faithfulness_checker.py` itself, isolated via `git stash` in my Week 7 entry above). My change introduces zero new failures.
+
+**Draft PR feedback received from:** None — I'm working a week ahead of my cohort's schedule, so the Slack peer-review channel isn't active yet. I posted the PR link anyway in case anyone is available to look early.
