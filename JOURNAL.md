@@ -136,3 +136,33 @@ I'm leaving these out of this PR since they're outside the scope of #153 and wou
 Note on `make test-unit`: 52 tests fail on this branch, all pre-existing and unrelated to my change. I confirmed this by comparing directly against `main`, which has 53 failures — one more than my branch, because this fix resolves exactly one of them (`test_none_context_chunk_text`). The remaining 52 are identical on both `main` and this branch, across modules I never touched (bias_detector, pii_scrubber, review_service, resume_parser, skill_extractor, tech_detector, and 3 unrelated tests within `test_faithfulness_checker.py` itself, isolated via `git stash` in my Week 7 entry above). My change introduces zero new failures.
 
 **Draft PR feedback received from:** None — I'm working a week ahead of my cohort's schedule, so the Slack peer-review channel isn't active yet. I posted the PR link anyway in case anyone is available to look early.
+
+
+## Week 10 — Iteration & reflection
+
+### Reviewer feedback
+
+**Feedback received:** [ ] Yes  [x] No — still awaiting review
+
+**Summary of feedback:** No feedback has come in on PR #294. I checked the PR's Conversation and Files Changed tabs after two weeks — zero comments, zero reviews. I opened my PR while working roughly a week ahead of my cohort's typical pace, so the Slack peer-review channel wasn't yet active, and no maintainer or peer engaged with it in the time since.
+
+**How you responded:** N/A — no feedback received to respond to.
+
+---
+
+### Reflection
+
+**What was harder than you expected?**
+Environment setup, by a wide margin. I expected the actual code fix to be the hard part, but I spent significantly more time than anticipated on local environment issues that had nothing to do with the codebase itself: enabling virtualization in BIOS, installing WSL from scratch, and then debugging two separate Docker service failures (a NumPy 2.0/hnswlib incompatibility crashing ChromaDB, followed by a missing `curl` binary breaking its healthcheck). None of this was flagged as a likely blocker going in, and it ate up more time than the actual bug fix, test verification, and documentation combined.
+
+**What did you learn about working in a large codebase?**
+The biggest shift was learning to trust — and verify — existing conventions rather than only reasoning from first principles. When my `docker-compose.yml` fix or my `faithfulness_checker.py` change got auto-reformatted by `black`/`ruff` pre-commit hooks, I had to check the diff carefully to confirm nothing beyond formatting had changed, rather than assuming my mental model of "what I wrote" matched "what got committed." I also learned that a bug fix in a shared codebase isn't just about making the immediate test pass — I had to actively check whether my change affected anything else (the 3 pre-existing failing tests in the same file, and later the 52 pre-existing failures across the whole test suite), and prove that isolation rather than just assuming it.
+
+**How did AI tools help — and where did they fall short?**
+AI assistance was most valuable for two things: diagnosing unfamiliar error messages quickly (the ChromaDB/numpy traceback, the Docker Compose `command:` string-vs-list gotcha) and for structuring documentation (JOURNAL.md, PLAN.md, the PR description) in a way that matched what the rubric was actually asking for. Where it fell short was in situations that required me to actually run something and observe the real result — confirming the pre-existing test failures were identical on `main` versus my branch required me to actually execute `git checkout main` and `make test-unit` myself and report back the real output; no amount of reasoning about the code could substitute for that empirical check.
+
+**What would you do differently if you started over?**
+I'd verify my local dev environment (virtualization, Docker) *before* even starting to browse issues, rather than discovering the problems mid-setup. I'd also open my PR as a draft earlier in the process, right after my initial fix passed its target test, rather than waiting until PLAN.md and JOURNAL.md were both fully polished — that would have given any potential reviewer more lead time to engage, even though in my case the timing (working ahead of the cohort) meant no reviewer was likely available regardless.
+
+**What are you most proud of from this module?**
+Not the fix itself — it's the `git stash` verification process I built for isolating my change's effect. Rather than just trusting that my one-line fix "probably" didn't break anything else, I proved it two separate ways: once by stashing my own commit and rerunning the affected test file, and again by directly comparing `main`'s full test suite against my branch's. That gave me a PR description I could defend with actual evidence rather than assumptions, which felt like a genuinely professional habit rather than just finishing an assignment.
